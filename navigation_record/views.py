@@ -11,7 +11,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.views.decorators.vary import vary_on_cookie
 
-CACHE_TTL = getattr(settings, 'CACHE_TLL', DEFAULT_TIMEOUT)
+CACHE_TTL = getattr(settings, 'CACHE_TLL', 60*60)
 
 
 class VehicleViewSet(viewsets.ModelViewSet):
@@ -35,7 +35,7 @@ class NavigationRecordViewSet(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         last_48_hour = timezone.now() - timezone.timedelta(hours=48)
-        queryset = NavigationRecord.objects.filter(datetime__gte=(last_48_hour.date(), timezone.now()))
+        queryset = NavigationRecord.objects.filter(datetime__range=(last_48_hour.date(), timezone.now()))
         serializer = NavigationRecordSerializer(queryset, many=True)
 
         return Response(serializer.data, status=200)
